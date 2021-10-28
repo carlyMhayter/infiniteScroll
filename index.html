@@ -1,19 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Infinite Scroll</title>
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <!-- Script -->
-    <h1>fart</h1>
-    <div class="loader" id="loader" hidden>
-        <img src="loader.svg" alt="Loading">
-
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- Title -->
+    <div class="title" id="title">
+      <!-- <img src="fresh.gif" alt ="title"> -->
     </div>
+    <div class="navbar-container">
+      <a href="https://www.carlyhayter.com"> Back to my portfolio!</a>
+    </div>
+    <div class="description-container" id="description-container">
+      A fun color palette generator with infinite scoll functionality. Created
+      with Imagga's Color AI API, and Unsplash.
+    </div>
+    <!-- Loader -->
+    <div class="lcaroader" id="loader">
+      <img src="loader.svg" alt="Loading" />
+    </div>
+    <!-- Image Container -->
+    <div class="image-container" id="image-container">
+      <div class="color-info" id="color-info"></div>
+    </div>
+
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
