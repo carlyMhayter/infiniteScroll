@@ -134,45 +134,132 @@ imageContainer.addEventListener("click", (event) => {
         }
       ).then((response) => response.json());
 
+      console.log("here is the response:", response);
+
       loadingTextP.className = "hidden-text";
+      const back_1 = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "0",
+        "closest_palette_color_html_code",
+      ]);
+      const back_1_name = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "0",
+        "closest_palette_color",
+      ]);
+      const back_2 = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "1",
+        "closest_palette_color_html_code",
+      ]);
+      const back_2_name = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "1",
+        "closest_palette_color",
+      ]);
+      const back_3 = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "2",
+        "closest_palette_color_html_code",
+      ]);
+      const back_3_name = _.get(response, [
+        "result",
+        "colors",
+        "background_colors",
+        "2",
+        "closest_palette_color",
+      ]);
+
+      const fore_1 = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "0",
+        "closest_palette_color_html_code",
+      ]);
+      const fore_1_name = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "0",
+        "closest_palette_color",
+      ]);
+      const fore_2 = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "1",
+        "closest_palette_color_html_code",
+      ]);
+      const fore_2_name = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "1",
+        "closest_palette_color",
+      ]);
+      const fore_3 = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "2",
+        "closest_palette_color_html_code",
+      ]);
+      const fore_3_name = _.get(response, [
+        "result",
+        "colors",
+        "foreground_colors",
+        "2",
+        "closest_palette_color",
+      ]);
 
       //gets the colors from the imagga response
-      const {
-        background_colors: {
-          0: {
-            closest_palette_color_html_code: back_1,
-            closest_palette_color: back_1_name,
-          },
-          1: {
-            closest_palette_color_html_code: back_2,
-            closest_palette_color: back_2_name,
-          },
-          2: {
-            closest_palette_color_html_code: back_3,
-            closest_palette_color: back_3_name,
-          },
-        },
-        foreground_colors: {
-          0: {
-            closest_palette_color_html_code: fore_1,
-            closest_palette_color: fore_1_name,
-          },
-          1: {
-            closest_palette_color_html_code: fore_2,
-            closest_palette_color: fore_2_name,
-          },
-          2: {
-            closest_palette_color_html_code: fore_3,
-            closest_palette_color: fore_3_name,
-          },
-        },
-      } = response.result.colors;
-      console.log(fore_2_name);
+      // const {
+      //   background_colors: {
+      //     0: {
+      //       closest_palette_color_html_code: back_1,
+      //       closest_palette_color: back_1_name,
+      //     },
+      //     1: {
+      //       closest_palette_color_html_code: back_2,
+      //       closest_palette_color: back_2_name,
+      //     },
+      //     2: {
+      //       closest_palette_color_html_code: back_3,
+      //       closest_palette_color: back_3_name,
+      //     },
+      //   },
+      //   foreground_colors: {
+      //     0: {
+      //       closest_palette_color_html_code: fore_1,
+      //       closest_palette_color: fore_1_name,
+      //     },
+      //     1: {
+      //       closest_palette_color_html_code: fore_2,
+      //       closest_palette_color: fore_2_name,
+      //     },
+      //     2: {
+      //       closest_palette_color_html_code: fore_3,
+      //       closest_palette_color: fore_3_name,
+      //     },
+      //   },
+      // } = response.result.colors;
 
+      console.log(fore_2_name);
       // const paletteContainer = document.createElement("div");
       // paletteContainer.className = "palette-boxes-container";
-
       //cycles through the pairs of hex codes/ color names to generate palette
+
       [
         [fore_1, fore_1_name],
         [fore_2, fore_2_name],
@@ -185,27 +272,30 @@ imageContainer.addEventListener("click", (event) => {
 
         //generates the divs/components for the palette
         console.log(colorName);
-        const colorBox = document.createElement("div");
-        colorBox.className = "indiv-color-box";
-        colorBox.setAttribute("style", `background-color: ${color}`);
+        console.log(color);
+        if (colorName) {
+          const colorBox = document.createElement("div");
+          colorBox.className = "indiv-color-box";
+          colorBox.setAttribute("style", `background-color: ${color}`);
 
-        const colorTextP = document.createElement("p");
-        const colorText = document.createTextNode(color);
-        colorTextP.className = "color-box-label";
-        colorTextP.appendChild(colorText);
+          const colorTextP = document.createElement("p");
+          const colorText = document.createTextNode(color);
+          colorTextP.className = "color-box-label";
+          colorTextP.appendChild(colorText);
 
-        const colorTitleP = document.createElement("p");
-        const colorTitle = document.createTextNode(colorName);
-        colorTitleP.className = "color-title-label";
-        colorTitleP.appendChild(colorTitle);
+          const colorTitleP = document.createElement("p");
+          const colorTitle = document.createTextNode(colorName);
+          colorTitleP.className = "color-title-label";
+          colorTitleP.appendChild(colorTitle);
 
-        const textAndColorBox = document.createElement("div");
-        textAndColorBox.className = "text-and-color-box";
+          const textAndColorBox = document.createElement("div");
+          textAndColorBox.className = "text-and-color-box";
 
-        textAndColorBox.appendChild(colorTitleP);
-        textAndColorBox.appendChild(colorBox);
-        textAndColorBox.appendChild(colorTextP);
-        paletteContainer.appendChild(textAndColorBox);
+          textAndColorBox.appendChild(colorTitleP);
+          textAndColorBox.appendChild(colorBox);
+          textAndColorBox.appendChild(colorTextP);
+          paletteContainer.appendChild(textAndColorBox);
+        }
       });
     } catch (e) {
       console.log(e);
