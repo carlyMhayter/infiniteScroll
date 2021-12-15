@@ -52,7 +52,7 @@ h1 {
 }
 
 /* loader */
-.loader {
+#loader {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -61,7 +61,7 @@ h1 {
   background: rgba(255, 255, 255, 0.8);
 }
 
-.loader img {
+#loader img {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -175,10 +175,19 @@ h1 {
   margin-bottom: 10px;
   padding: 5px;
 }
-/* media query: large smartphone */
 .hidden-text {
   display: none;
 }
+.red-error {
+  color: #bd5353;
+  padding: 1em 2em;
+  text-align: center;
+  font-size: 20px;
+}
+.red-error-container {
+  background-color: #ffebe0;
+}
+
 @media screen and (max-width: 950px) {
   body {
     /* background-color: red; */

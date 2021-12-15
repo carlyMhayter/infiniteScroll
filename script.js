@@ -113,6 +113,7 @@ imageContainer.addEventListener("click", (event) => {
       let username = apiKeyImagga;
       let password = apiSecretImagga;
       let headers = new Headers();
+
       headers.set(
         "Authorization",
         "Basic " + window.btoa(username + ":" + password)
@@ -123,7 +124,16 @@ imageContainer.addEventListener("click", (event) => {
       const loadingTextP = document.createElement("p");
       const loadingText = document.createTextNode("loading...");
       loadingTextP.appendChild(loadingText);
+
+      const errorTextP = document.createElement("p");
+      const errorText = document.createTextNode(
+        "An error has occured with the Color AI for this particular image! Try another photo! "
+      );
+      errorTextP.className = "hidden-text";
+      errorTextP.appendChild(errorText);
       paletteContainer.appendChild(loadingTextP);
+      paletteContainer.appendChild(errorTextP);
+
       button.parentNode.insertBefore(paletteContainer, button.nextSibling);
 
       let response = await fetch(
@@ -135,8 +145,16 @@ imageContainer.addEventListener("click", (event) => {
       ).then((response) => response.json());
 
       console.log("here is the response:", response);
+      if (response?.status?.type !== "success") {
+        console.log("caught it");
+        errorTextP.classList.remove("hidden-text");
+        errorTextP.className = "red-error";
+        paletteContainer.classList.add("red-error-container");
+        // throw error;
+      }
 
       loadingTextP.className = "hidden-text";
+
       const back_1 = _.get(response, [
         "result",
         "colors",
@@ -223,41 +241,7 @@ imageContainer.addEventListener("click", (event) => {
         "closest_palette_color",
       ]);
 
-      //gets the colors from the imagga response
-      // const {
-      //   background_colors: {
-      //     0: {
-      //       closest_palette_color_html_code: back_1,
-      //       closest_palette_color: back_1_name,
-      //     },
-      //     1: {
-      //       closest_palette_color_html_code: back_2,
-      //       closest_palette_color: back_2_name,
-      //     },
-      //     2: {
-      //       closest_palette_color_html_code: back_3,
-      //       closest_palette_color: back_3_name,
-      //     },
-      //   },
-      //   foreground_colors: {
-      //     0: {
-      //       closest_palette_color_html_code: fore_1,
-      //       closest_palette_color: fore_1_name,
-      //     },
-      //     1: {
-      //       closest_palette_color_html_code: fore_2,
-      //       closest_palette_color: fore_2_name,
-      //     },
-      //     2: {
-      //       closest_palette_color_html_code: fore_3,
-      //       closest_palette_color: fore_3_name,
-      //     },
-      //   },
-      // } = response.result.colors;
-
       console.log(fore_2_name);
-      // const paletteContainer = document.createElement("div");
-      // paletteContainer.className = "palette-boxes-container";
       //cycles through the pairs of hex codes/ color names to generate palette
 
       [
