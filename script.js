@@ -6,6 +6,7 @@ const colorIcon = document.getElementById("color-icon");
 const apiKeyImagga = "acc_38e3d7daa190425";
 const apiSecretImagga = "7b801be296fac0cec59a7f96f1f10917";
 
+//initialize variables
 let ready = false;
 let imagesLoaded = 0;
 let totalImages = 0;
@@ -17,14 +18,14 @@ const query = "citrus";
 const apiKeyUnsplash = "9U7i1PPeDJT-zNjkSec9-bv2iJxmB2Frns0kFDnTX-Y";
 const apiUrlUnsplash = `https://api.unsplash.com/photos/random/?client_id=${apiKeyUnsplash}&count=${count}&query=${query}`;
 
-//check if all iamges are loaded
+//check if all images are loaded for inifite scroll
 function imageLoaded() {
-  console.log("image loaded");
   imagesLoaded++;
+
+  //check if all the images are loaded and then hide the loader
   if (imagesLoaded === totalImages) {
     ready = true;
     loader.hidden = true;
-    console.log("ready = ", ready);
   }
 }
 
@@ -35,6 +36,7 @@ function setAttributes(element, attributes) {
   }
 }
 
+//generates the DOM elements for the photos
 function displayPhotos() {
   imagesLoaded = 0;
   totalImages = photoArray.length;
@@ -97,16 +99,18 @@ async function getPhotos() {
   }
 }
 
+//when image is clicked on, call Imagga API and generate palette
 imageContainer.addEventListener("click", (event) => {
   const button = event.target;
 
+  //check that the palette button was clicked
   if (!button.classList.contains("palette-button")) {
     return;
   }
   const url = button.getAttribute("data-photo-url");
   console.log(url);
 
-  //on click call this function to generate the palette
+  //fetch data from Imagga API
   async function getImaggaData() {
     //basic authorization and fetch method for Imagga api
     try {
