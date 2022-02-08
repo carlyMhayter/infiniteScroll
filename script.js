@@ -1,5 +1,5 @@
-const imageContainer = document.getElementById("image-container");
-imageContainer.className = "image-container";
+const imageContainer = document.querySelector(".image-container");
+
 const loader = document.getElementById("loader");
 const colorIcon = document.getElementById("color-icon");
 
@@ -53,18 +53,16 @@ function displayPhotos() {
 
     //create <img> for photo
     const img = document.createElement("img");
-    img.className = "unsplash-photo";
     setAttributes(img, {
       src: photo.urls.regular,
       alt: photo.alt_description,
       title: photo.alt_description,
       color: photo.color,
+      class: "unsplash-photo",
     });
 
     //make palette button
     const paletteButton = document.createElement("button");
-    paletteButton.className = "palette-button";
-    paletteButton.id = img.src;
 
     setAttributes(paletteButton, {
       style: `background: #fff;
@@ -72,6 +70,7 @@ function displayPhotos() {
                     border-right: 10px solid ${photo.color};
                     `,
       "data-photo-url": img.src,
+      class: "palette-button",
     });
 
     const imgAndButton = document.createElement("div");
@@ -99,6 +98,109 @@ async function getPhotos() {
   }
 }
 
+async function getImaggaData(buttonItem, urlItem) {
+  //basic authorization and fetch method for Imagga api
+  try {
+    let username = apiKeyImagga;
+    let password = apiSecretImagga;
+    let headers = new Headers();
+
+    headers.set(
+      "Authorization",
+      "Basic " + window.btoa(username + ":" + password)
+    );
+    //create loading box
+    const paletteContainer = document.createElement("div");
+    paletteContainer.className = "palette-boxes-container";
+    const loadingTextP = document.createElement("p");
+    const loadingText = document.createTextNode("loading...");
+    loadingTextP.appendChild(loadingText);
+
+    const errorTextP = document.createElement("p");
+    const errorText = document.createTextNode(
+      "An error has occured with the Color AI for this particular image! Try another photo! "
+    );
+    errorTextP.className = "hidden-text";
+    errorTextP.appendChild(errorText);
+    paletteContainer.appendChild(loadingTextP);
+    paletteContainer.appendChild(errorTextP);
+
+    buttonItem.parentNode.insertBefore(
+      paletteContainer,
+      buttonItem.nextSibling
+    );
+
+    let response = await fetch(
+      `https://api.imagga.com/v2/colors?image_url=${urlItem}`,
+      {
+        method: "GET",
+        headers: headers,
+      }
+    ).then((response) => response.json());
+
+    console.log("here is the response:", response);
+    if (response?.status?.type !== "success") {
+      console.log("caught it");
+      errorTextP.classList.remove("hidden-text");
+      errorTextP.className = "red-error";
+      paletteContainer.classList.add("red-error-container");
+      // throw error;
+    }
+
+    loadingTextP.className = "hidden-text";
+    const colors = _.get(response, "result.colors");
+    const lodashArray = [];
+
+    // extracts data from api call, returns nothing if undefined
+    ["fore", "back"].forEach((name) => {
+      for (let i = 0; i < 3; i++) {
+        lodashArray.push([
+          _.get(
+            colors,
+            `${name}ground_colors[${i}].closest_palette_color_html_code`
+          ),
+          _.get(colors, `${name}ground_colors[${i}].closest_palette_color`),
+        ]);
+      }
+    });
+
+    console.log(lodashArray);
+
+    lodashArray.forEach((colorArray) => {
+      const { 0: color, 1: colorName } = colorArray;
+
+      //generates the divs/components for the palette
+      console.log(colorName);
+      console.log(color);
+      if (colorName) {
+        const colorBox = document.createElement("div");
+        colorBox.className = "indiv-color-box";
+        colorBox.setAttribute("style", `background-color: ${color}`);
+
+        const colorTextP = document.createElement("p");
+        const colorText = document.createTextNode(color);
+        colorTextP.className = "color-box-label";
+        colorTextP.appendChild(colorText);
+
+        const colorTitleP = document.createElement("p");
+        const colorTitle = document.createTextNode(colorName);
+        colorTitleP.className = "color-title-label";
+        colorTitleP.appendChild(colorTitle);
+
+        const textAndColorBox = document.createElement("div");
+        textAndColorBox.className = "text-and-color-box";
+
+        textAndColorBox.appendChild(colorTitleP);
+        textAndColorBox.appendChild(colorBox);
+        textAndColorBox.appendChild(colorTextP);
+        paletteContainer.appendChild(textAndColorBox);
+      }
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 //when image is clicked on, call Imagga API and generate palette
 imageContainer.addEventListener("click", (event) => {
   const button = event.target;
@@ -110,187 +212,7 @@ imageContainer.addEventListener("click", (event) => {
   const url = button.getAttribute("data-photo-url");
   console.log(url);
 
-  //fetch data from Imagga API
-  async function getImaggaData() {
-    //basic authorization and fetch method for Imagga api
-    try {
-      let username = apiKeyImagga;
-      let password = apiSecretImagga;
-      let headers = new Headers();
-
-      headers.set(
-        "Authorization",
-        "Basic " + window.btoa(username + ":" + password)
-      );
-      //create loading box
-      const paletteContainer = document.createElement("div");
-      paletteContainer.className = "palette-boxes-container";
-      const loadingTextP = document.createElement("p");
-      const loadingText = document.createTextNode("loading...");
-      loadingTextP.appendChild(loadingText);
-
-      const errorTextP = document.createElement("p");
-      const errorText = document.createTextNode(
-        "An error has occured with the Color AI for this particular image! Try another photo! "
-      );
-      errorTextP.className = "hidden-text";
-      errorTextP.appendChild(errorText);
-      paletteContainer.appendChild(loadingTextP);
-      paletteContainer.appendChild(errorTextP);
-
-      button.parentNode.insertBefore(paletteContainer, button.nextSibling);
-
-      let response = await fetch(
-        `https://api.imagga.com/v2/colors?image_url=${url}`,
-        {
-          method: "GET",
-          headers: headers,
-        }
-      ).then((response) => response.json());
-
-      console.log("here is the response:", response);
-      if (response?.status?.type !== "success") {
-        console.log("caught it");
-        errorTextP.classList.remove("hidden-text");
-        errorTextP.className = "red-error";
-        paletteContainer.classList.add("red-error-container");
-        // throw error;
-      }
-
-      loadingTextP.className = "hidden-text";
-
-      const back_1 = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "0",
-        "closest_palette_color_html_code",
-      ]);
-      const back_1_name = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "0",
-        "closest_palette_color",
-      ]);
-      const back_2 = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "1",
-        "closest_palette_color_html_code",
-      ]);
-      const back_2_name = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "1",
-        "closest_palette_color",
-      ]);
-      const back_3 = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "2",
-        "closest_palette_color_html_code",
-      ]);
-      const back_3_name = _.get(response, [
-        "result",
-        "colors",
-        "background_colors",
-        "2",
-        "closest_palette_color",
-      ]);
-
-      const fore_1 = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "0",
-        "closest_palette_color_html_code",
-      ]);
-      const fore_1_name = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "0",
-        "closest_palette_color",
-      ]);
-      const fore_2 = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "1",
-        "closest_palette_color_html_code",
-      ]);
-      const fore_2_name = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "1",
-        "closest_palette_color",
-      ]);
-      const fore_3 = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "2",
-        "closest_palette_color_html_code",
-      ]);
-      const fore_3_name = _.get(response, [
-        "result",
-        "colors",
-        "foreground_colors",
-        "2",
-        "closest_palette_color",
-      ]);
-
-      console.log(fore_2_name);
-      //cycles through the pairs of hex codes/ color names to generate palette
-
-      [
-        [fore_1, fore_1_name],
-        [fore_2, fore_2_name],
-        [fore_3, fore_3_name],
-        [back_1, back_1_name],
-        [back_2, back_2_name],
-        [back_3, back_3_name],
-      ].forEach((colorArray) => {
-        const { 0: color, 1: colorName } = colorArray;
-
-        //generates the divs/components for the palette
-        console.log(colorName);
-        console.log(color);
-        if (colorName) {
-          const colorBox = document.createElement("div");
-          colorBox.className = "indiv-color-box";
-          colorBox.setAttribute("style", `background-color: ${color}`);
-
-          const colorTextP = document.createElement("p");
-          const colorText = document.createTextNode(color);
-          colorTextP.className = "color-box-label";
-          colorTextP.appendChild(colorText);
-
-          const colorTitleP = document.createElement("p");
-          const colorTitle = document.createTextNode(colorName);
-          colorTitleP.className = "color-title-label";
-          colorTitleP.appendChild(colorTitle);
-
-          const textAndColorBox = document.createElement("div");
-          textAndColorBox.className = "text-and-color-box";
-
-          textAndColorBox.appendChild(colorTitleP);
-          textAndColorBox.appendChild(colorBox);
-          textAndColorBox.appendChild(colorTextP);
-          paletteContainer.appendChild(textAndColorBox);
-        }
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  getImaggaData();
+  getImaggaData(button, url);
 });
 
 //check to see if scrolling near bottom of page, Load more photos
